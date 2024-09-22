@@ -1,5 +1,13 @@
 # Sử dụng image python chính thức
-FROM python:3.10-slim
+FROM python:3.9-slim
+
+# Cài đặt các dependencies cần thiết cho OpenCV
+RUN apt-get update && apt-get install -y \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxrender1 \
+    libxext6
 
 # Thiết lập thư mục làm việc trong container
 WORKDIR /app
@@ -19,5 +27,5 @@ COPY . .
 # Thiết lập cổng cho ứng dụng
 EXPOSE 8501
 
-# Chạy ứng dụng Streamlit
-CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+# Chạy ứng dụng Streamlit với địa chỉ IP 192.168.x.x
+CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=192.168.x.x"]

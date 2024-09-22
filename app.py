@@ -37,8 +37,12 @@ if uploaded_file is not None:
                 text_features = clip_model.get_text_features(**text_inputs)
 
             similarity = torch.cosine_similarity(image_features, text_features)
+
+            # Calculate similarity scores for each label
+            similarity_scores = similarity.tolist()
             predicted_label_index = similarity.argmax().item()
             predicted_label = labels[predicted_label_index]
+            predicted_score = similarity_scores[predicted_label_index]
 
             end_time_clip = time.time()
             clip_time = end_time_clip - start_time_clip
@@ -59,9 +63,16 @@ if uploaded_file is not None:
             st.write(f"Time taken for CLIP classification: {clip_time:.4f} seconds")
             st.write(f"Total time taken: {yolo_time + clip_time:.4f} seconds")
 
-            cv2.putText(image, f"frame classification: {predicted_label}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+            st.write(f"Predicted Label: **{predicted_label}**")
+            st.write(f"CLIP Similarity Score: **{predicted_score:.4f}**")
+            st.write(f"CLIP Confidence: **{predicted_score * 100:.2f}%**")
+
+            cv2.putText(image, f"Frame classification: {predicted_label}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
                         1, (255, 0, 0), 2, cv2.LINE_AA)
 
             st.image(image, caption=f"Result: {predicted_label}", use_column_width=True)
+
+
+
     else:
         st.write("Only images are allowed (jpg, jpeg, png).")
